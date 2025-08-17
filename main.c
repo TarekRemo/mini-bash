@@ -4,7 +4,7 @@
 
 int main(void){
 
-    char* prompt = get_prompt(prompt);
+    char* prompt = get_prompt();
     char* input; 
 
     while(1){
