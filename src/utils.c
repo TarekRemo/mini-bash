@@ -8,36 +8,32 @@ char* get_prompt(){
     char* username = getenv("USERNAME"); 
 
     if(username == NULL){
-        strcpy(username, "user");
+        username = "user";
     }
 
     char* pwd = getenv("PWD"); 
 
     if(pwd == NULL){
-        strcpy(pwd, "/"); 
+        pwd = "/"; 
         setenv("PWD", pwd, 1); //setting the current directory to the root of the file system
     } 
+
     else{
         char* home = getenv("HOME"); 
 
         //checking if the current directory is in the "home" directory of the user
         if( strstr(pwd, home) != NULL ){
-
             int homeLength = strlen(home);
             int pwdLength = strlen(pwd); 
 
-            char newPwd[pwdLength-homeLength+1]; 
-            newPwd[0] = '~'; 
-
             //replacing the "home" directory string of the user by "~" 
-            for(int pos = 0 ; pos < pwdLength ; pos++){
-                if(pos < homeLength)
-                    continue; 
-                else 
-                    newPwd[pos-homeLength+1] = pwd[pos];  
-            }
-           strcpy(pwd, newPwd); //updating the pwd variable with the new string
+            char newPwd[pwdLength-homeLength+2]; 
+            newPwd[0] = '~'; 
+            strcpy(newPwd + 1, pwd + homeLength); //copying the rest of the string after the "home" directory
+            //replacing the "home" directory string of the user by "~" 
 
+            strcpy(pwd, newPwd); //updating the pwd variable with the new string
+        
         }//checking if the current directory is in the "home" directory of the user
     }
 
