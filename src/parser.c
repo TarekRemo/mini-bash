@@ -1,9 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../include/parser.h"
-
-
+#include "../include/parser.h" 
 
 command parse_command(char* input){
  
@@ -30,7 +28,7 @@ command parse_command(char* input){
                 command.options[optionsIndex] = strToken;
                 optionsIndex++; 
                 command.optionsNum++; 
-            }
+            }//if the token is an option
             
             else{
                 command.args[argsIndex] = strToken; 
@@ -53,5 +51,41 @@ char* read_input(){
     char* input = malloc(size); 
 
     fgets(input, size, stdin);
+    add_to_history(input); 
+
     return input; 
+}
+
+
+void add_to_history(char* input){
+    if(!a_historyFile)
+        open_history_file('a'); 
+    
+    fprintf(a_historyFile, "%s", input); 
+    fflush(a_historyFile); 
+}
+
+
+void open_history_file(char option){
+    char* path = getenv("HOME");
+
+    if(path != NULL){
+        strcat(path, "/.mini-bash_history"); //completing the path to the history file 
+
+        if(option == 'a' && a_historyFile == NULL) //if we want to open the file to append to it
+                a_historyFile = fopen(path, "a");
+
+        //If we want to open the file to read from it
+        else if (option == 'r' && r_historyFile == NULL) {
+            r_historyFile = fopen(path, "r"); 
+
+            //if the file doesn't existe
+            if(r_historyFile == NULL){
+                r_historyFile = fopen(path, "a"); //creating it
+                fclose(r_historyFile); 
+                r_historyFile = fopen(path, "r"); 
+            }//if the file doesn't existe
+
+        }//If we want to open the file to read from it
+    }
 }
