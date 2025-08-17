@@ -4,8 +4,6 @@
 #include "../include/utils.h"
 
 
-
-
 char* get_prompt(){
     char* username = getenv("USERNAME"); 
 
@@ -56,11 +54,4 @@ char* get_prompt(){
     //constructing the prompt string
 
     return prompt; 
-}
-
-
-char* read_command(){
-    char* input; 
-    scanf("%s", input); 
-    return input; 
 }
