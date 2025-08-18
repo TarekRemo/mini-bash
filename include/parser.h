@@ -6,28 +6,32 @@
  * @file parser.h
  * @brief Header file for command parsing functionality.
  * This header file defines the structures and functions used for parsing commands
- * in a command-line interface. It includes the definition of the `command` structure,
- * which holds the command name, options, and arguments, as well as the functions
- * `parse_command` and `read_input` for processing user input.
+ * in a command-line interface.
  */
 
- /**
-  * Global variables for history file pointers.
-  * These pointers are used to read and write command history to files.
-  * `a_historyFile` is for appending history, while `r_historyFile`
-  * is for reading history.
-  * They are initialized to `NULL` and should be opened before use.
-  * The files are expected to be opened in the appropriate modes
-  * (e.g., append mode for `a_historyFile` and read mode for `r_historyFile`).
-  */
-  static FILE *a_historyFile = NULL;  
-  static FILE *r_historyFile = NULL;
 
- /**
-  * Structure representing a command.
-  * It contains the command name, an array of options, an array of arguments,
-  * and the counts of options and arguments.
-  */
+/**
+ * Array to hold the history of commands.
+ * It is dynamically allocated and resized as needed.
+ * The number of commands in history is tracked by `nbHistoryCommands`.
+ * The history is loaded at the start of the program from the history
+ * file located at the home directory of the user (e.g., `~/.mini-bash_history`).
+ * The commands are stored as strings, and each command can be retrieved later.
+ */
+static char** historyCommands; 
+
+/**
+ * Number of commands in the history.
+ * It is initialized to zero and updated whenever a command is added or loaded from the history
+ * file.
+ */
+static int nbHistoryCommands; 
+
+/**
+* Structure representing a command.
+* It contains the command name, an array of options, an array of arguments,
+* and the counts of options and arguments.
+*/
 typedef struct command{
     char* name; 
     char* options[MAX_OPTIONS]; 
@@ -48,31 +52,38 @@ typedef struct command{
 command parse_command(char* input); 
 
 /**
- * Reads input from the standard input (stdin).
- * Allocates memory for the input string based on `INPUT_MAX_SIZE`.
- * @return A pointer to the input string read from stdin.
- * The input is read using `fgets`, which captures the entire line of input.
- * The caller is responsible for freeing the allocated memory after use.
- * If the input exceeds `INPUT_MAX_SIZE`, it will be truncated.
+ * Reads input from the user in non-canonical mode.
+ * The function reads characters one by one, allowing for immediate processing of input.
+ * special keys handeled are the up and down arrows to navigate through command history 
+ * and the enter key to submit the command.
+ * @return the input string entered by the user once the enter key is pressed.
+ * The input is allocated dynamically and should be freed by the caller using `free()`.
  */
 char* read_input(); 
 
 /**
- * appends the input command to the history file.
- * If the history file is not open, it will attempt to open it using `open_history_file`.
- * @param input The command input to be added to the history. 
- * @see open_history_file.
+ * Adds a command to both the history file and the in-memory history array.
+ * @param command The command string to be added to the history.
  */
 void add_to_history(char* input); 
 
 /**
- * Opens the history file for reading or appending.
- * The function initializes the global file pointers `a_historyFile` or `r_historyFile`
- * based on the provided option. If the file is already open, it will not reopen it
- * to avoid resource leaks.
- * The history file is expected to be located in the home directory of the user.
- * If the history file is missing, it will be created.
- * @param option A character indicating the mode to open the file:
- *               'a' for appending (write mode), 'r' for reading.
+ * Loads the command history from the history file into the in-memory history array.
+ * The history file is read line by line, and each command is stored in the `historyCommands` array.
+ * The number of commands loaded is tracked by `nbHistoryCommands`.
+ * The history file is expected to be located at `~/.mini-bash_history`.
+ * Each command is stored as a dynamically allocated string in the `historyCommands` array.
+ * The function reallocates the `historyCommands` array as needed to accommodate the loaded commands.
+ * The newline character at the end of each line is replaced with a null terminator to properly
+ * terminate the strings.
  */
-void open_history_file(char option); 
+void load_commands_history(); 
+
+/**
+ * Opens the history file for reading or appending.
+ * The history file is expected to be located at `~/.mini-bash_history`.
+ * If the file does not exist, it will be automtically created.
+ * @param option 'r' for reading, 'a' for appending.
+ * @return A file pointer to the opened history file.
+ */
+FILE* open_history_file(char option); 
