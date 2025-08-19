@@ -12,7 +12,7 @@ char* get_prompt(){
     }
 
     char* pwd = getenv("PWD"); 
-
+    
     if(pwd == NULL){
         pwd = "/"; 
         setenv("PWD", pwd, 1); //setting the current directory to the root of the file system
@@ -25,15 +25,14 @@ char* get_prompt(){
         if( strstr(pwd, home) != NULL ){
             int homeLength = strlen(home);
             int pwdLength = strlen(pwd); 
+            char* newPwd = malloc(pwdLength - homeLength + 2); // +2 for '~' and '\0'
 
             //replacing the "home" directory string of the user by "~" 
-            char newPwd[pwdLength-homeLength+2]; 
             newPwd[0] = '~'; 
             strcpy(newPwd + 1, pwd + homeLength); //copying the rest of the string after the "home" directory
             //replacing the "home" directory string of the user by "~" 
 
-            strcpy(pwd, newPwd); //updating the pwd variable with the new string
-        
+            pwd = newPwd;        
         }//checking if the current directory is in the "home" directory of the user
     }
 
@@ -41,13 +40,17 @@ char* get_prompt(){
     int pwdLength = strlen(pwd);
 
     //constructing the prompt string
-    char* prompt = malloc(usernameLength + pwdLength + 12); // 12 for "mini-bash@", ":", and "$ "
-    strcpy(prompt, "mini-bash@");
+    char* prompt = malloc(usernameLength + pwdLength + 32 ); // 34 for "mini-bash@", ":", and "$ " and color codes
+    strcpy(prompt, "\033[33mmini-bash@"); //yellow color for "mini-bash@" and username
     strcat(prompt, username);
-    strcat(prompt, ":"); 
+    strcat(prompt, "\033[37m:\033[34m"); //white color for the colon and blue for the pwd
     strcat(prompt, pwd);
-    strcat(prompt, "$"); 
+    strcat(prompt, "\033[0m$"); //default color reset and dollar sign
     //constructing the prompt string
+
+    if(pwd[0] != '~') {
+        free(pwd); // Free the old pwd string if it was dynamically allocated
+    }
 
     return prompt; 
 }
