@@ -12,6 +12,11 @@ command parse_command(char* input){
     int optionsIndex = 0; 
 
     command command;
+
+    //making sure the first arg and first opt are empty strings if none is present
+    command.args[0] = ""; 
+    command.options[0] = ""; 
+
     command.optionsNum = 0; 
     command.argsNum = 0; 
 

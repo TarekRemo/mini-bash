@@ -66,12 +66,9 @@ void pwd(){
 int cd(char* path){
 
     //if the user wants to go to the home directory
-    if(strcmp(path, ".") == 0)
-        strcpy(path, getenv("HOME"));
-
-    //If the user want to go back to the old directory
-    else if (strcmp(path, "-") == 0)
-        strcpy(path, getenv("OLDPWD")); 
+    if(strcmp(path, "") == 0 || path == NULL || !path ){
+        path = getenv("HOME"); 
+    }
 
     int result = chdir(path); 
 
