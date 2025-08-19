@@ -3,13 +3,8 @@
 
 #include "../include/parser.h"
 
-#define NB_BUILTIN_COMMANDS 1
+#define NB_BUILTIN_COMMANDS 2
 #define REFRESH_PROMPT 401
-
-/**
- * Array of builtin commands.
- */
-static char* builtinCommands[NB_BUILTIN_COMMANDS] = {"cd"};
 
 /**
  * Executes a builtin command.
@@ -24,6 +19,8 @@ int execute_builtin(command command);
  * @returns 1 if the command is a builtin command, 0 otherwise.
  */
 int is_builtin(char* command); 
+
+void pwd(); 
 
 /**
  * Changes the current working directory to the specified path.
