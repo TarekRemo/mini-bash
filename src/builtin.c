@@ -48,7 +48,7 @@ void pwd(){
                 perror("Vous n'avez pas les permission nécessaires"); 
                 break; 
             case ENOMEM: 
-                perror("Espace unsufisant"); 
+                perror("Espace insuffisant"); 
                 break; 
             default:
                 perror("Une erreur est survenue"); 
@@ -104,26 +104,6 @@ int cd(char* path){
 
         pwd = malloc(PATH_MAX); 
         pwd = getcwd(pwd, PATH_MAX); 
-
-        /*
-        if(path[0] == '.'){
-            if(path[1] == '/')
-                strcat(pwd, path+1); //replacing the dot with the current directory
-
-            else if (path[1] == '.'){
-                char* lastDir = strrchr(pwd, '/'); 
-                lastDir[0] = '\0'; //removing the last directory from the path
-            }
-        }
-
-        else if (path[0] != '/'){ //adding the current directory to the path if it is not absolute
-            strcat(pwd, "/"); 
-            strcat(pwd, path); 
-        }
-
-        else{
-            strcpy(pwd, path); 
-        }*/
 
         setenv("PWD", pwd, 1); //updating the PWD env var
         setenv("OLDPWD", oldPwd, 1); //updating the OLDPWD env var

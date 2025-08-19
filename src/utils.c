@@ -2,40 +2,37 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
+#include  <linux/limits.h>
 
 
 
 char* get_prompt(){
-    char* username = getenv("USERNAME"); 
 
+    char* username = getenv("USERNAME"); 
     if(username == NULL){
         username = "user";
     }
 
-    char* pwd = getenv("PWD"); 
+    char* pwd = malloc(PATH_MAX); 
+    pwd = getcwd(pwd, PATH_MAX); 
 
     if(pwd == NULL){
-        pwd = "/"; 
-        setenv("PWD", pwd, 1); //setting the current directory to the root of the file system
+        strcpy(pwd, "/");  
+        chdir(pwd); //setting the current directory to the root of the file system
+        setenv("PWD", pwd, 1); //updating the PWD variable
     } 
 
-    else{
-        char* home = getenv("HOME"); 
+    char* home = getenv("HOME"); 
 
-        //checking if the current directory is in the "home" directory of the user
-        if( strncmp(pwd, home, strlen(home)) == 0 ){
-            int homeLength = strlen(home);
-            int pwdLength = strlen(pwd); 
-            char* newPwd = malloc(pwdLength - homeLength + 2); // +2 for '~' and '\0'
-
-            //replacing the "home" directory string of the user by "~" 
-            newPwd[0] = '~'; 
-            strcpy(newPwd + 1, pwd + homeLength); //copying the rest of the string after the "home" directory
-            //replacing the "home" directory string of the user by "~" 
-
-            pwd = newPwd;        
-        }//checking if the current directory is in the "home" directory of the user
-    }
+    //checking if the current directory is in the "home" directory of the user
+    if( strncmp(pwd, home, strlen(home)) == 0 ){
+        int homeLength = strlen(home);
+        char* cpy = strdup(pwd); 
+        pwd[0] = '~'; 
+        strcpy(pwd+1, cpy+homeLength);      
+    }//checking if the current directory is in the "home" directory of the user
+    
 
     int usernameLength = strlen(username);
     int pwdLength = strlen(pwd);
@@ -49,10 +46,7 @@ char* get_prompt(){
     strcat(prompt, "\033[0m$"); //default color reset and dollar sign
     //constructing the prompt string
 
-    if(pwd[0] == '~'){
-        //if the pwd starts with "~", we need to free the memory allocated for the newPwd
-        free(pwd);
-    }
+    free(pwd);
 
     return prompt; 
 }
