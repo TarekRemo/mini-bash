@@ -4,8 +4,8 @@ TARGET = bin/mini-bash
 
 all: $(TARGET)
 
-$(TARGET): main.o utils.o parser.o bin
-	$(CC) main.o utils.o parser.o -o bin/mini-bash
+$(TARGET): main.o utils.o parser.o builtin.o bin
+	$(CC) main.o utils.o parser.o builtin.o -o bin/mini-bash
 
 bin: 
 	mkdir bin
@@ -18,3 +18,6 @@ utils.o: src/utils.c
 
 parser.o: src/parser.c
 	$(CC) $(CFLAGS) src/parser.c -c parser.o
+
+builtin.o: src/builtin.c
+	$(CC) $(CFLAGS) src/builtin.c -c builtin.o

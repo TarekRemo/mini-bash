@@ -1,3 +1,5 @@
+#ifndef UTILS_H
+#define UTILS_H
 
 /**
  * @brief Gets the command prompt string.
@@ -9,3 +11,5 @@
  * The caller is responsible for freeing the allocated memory for the prompt string.
  */
 char* get_prompt(); 
+
+#endif

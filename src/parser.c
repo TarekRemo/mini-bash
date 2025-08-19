@@ -1,12 +1,13 @@
+#include "../include/parser.h" 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <termios.h>
 #include <unistd.h>
-#include "../include/parser.h" 
+
 
 command parse_command(char* input){
-    int  tokenIndex = 0; 
+    int tokenIndex = 0; 
     int argsIndex = 0; 
     int optionsIndex = 0; 
 
@@ -17,13 +18,12 @@ command parse_command(char* input){
     char* strToken = strtok(input, " \t\n"); //spliting the input using the spaces and tab characters
 
     while( strToken != NULL ){
-
         if(tokenIndex == 0){
             command.name = strToken; //If it's the first token, then it's the command's name
         }
         else{
             //if the token is an option
-            if(strstr(strToken, "-")){
+            if(strToken[0] == '-'){
                 command.options[optionsIndex] = strToken;
                 optionsIndex++; 
                 command.optionsNum++; 
@@ -63,7 +63,6 @@ char* read_input(){
     //getting the input char by characters
     while(1){
         c = getchar();
-
         //if the user pressed an escape key
         if(c == 27){
             getchar(); //ignoring the 2nd character

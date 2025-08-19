@@ -1,3 +1,8 @@
+#ifndef PARSER_H
+#define PARSER_H
+
+#include <stdio.h>
+
 #define MAX_OPTIONS 15
 #define MAX_ARGS 15
 #define INPUT_MAX_SIZE 256
@@ -87,3 +92,5 @@ void load_commands_history();
  * @return A file pointer to the opened history file.
  */
 FILE* open_history_file(char option); 
+
+#endif

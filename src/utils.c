@@ -1,7 +1,8 @@
+#include "../include/utils.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "../include/utils.h"
+
 
 
 char* get_prompt(){
@@ -12,7 +13,7 @@ char* get_prompt(){
     }
 
     char* pwd = getenv("PWD"); 
-    
+
     if(pwd == NULL){
         pwd = "/"; 
         setenv("PWD", pwd, 1); //setting the current directory to the root of the file system
@@ -22,7 +23,7 @@ char* get_prompt(){
         char* home = getenv("HOME"); 
 
         //checking if the current directory is in the "home" directory of the user
-        if( strstr(pwd, home) != NULL ){
+        if( strncmp(pwd, home, strlen(home)) == 0 ){
             int homeLength = strlen(home);
             int pwdLength = strlen(pwd); 
             char* newPwd = malloc(pwdLength - homeLength + 2); // +2 for '~' and '\0'
@@ -48,8 +49,9 @@ char* get_prompt(){
     strcat(prompt, "\033[0m$"); //default color reset and dollar sign
     //constructing the prompt string
 
-    if(pwd[0] != '~') {
-        free(pwd); // Free the old pwd string if it was dynamically allocated
+    if(pwd[0] == '~'){
+        //if the pwd starts with "~", we need to free the memory allocated for the newPwd
+        free(pwd);
     }
 
     return prompt; 
