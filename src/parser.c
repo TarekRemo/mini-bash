@@ -6,6 +6,24 @@
 #include <unistd.h>
 
 
+/**
+ * Array to hold the history of commands.
+ * It is dynamically allocated and resized as needed.
+ * The number of commands in history is tracked by `nbHistoryCommands`.
+ * The history is loaded at the start of the program from the history
+ * file located at the home directory of the user (e.g., `~/.mini-bash_history`).
+ * The commands are stored as strings, and each command can be retrieved later.
+ */
+static char** historyCommands; 
+
+
+/**
+ * Number of commands in the history.
+ * It is initialized to zero and updated whenever a command is added or loaded from the history
+ * file.
+ */
+static int nbHistoryCommands; 
+
 command parse_command(char* input){
     int tokenIndex = 0; 
     int argsIndex = 0; 
@@ -146,6 +164,9 @@ void add_to_history(char* command){
 
 
 void load_commands_history(){
+    
+    historyCommands = malloc(0);
+    nbHistoryCommands = 0;
 
     FILE* historyFile = open_history_file('r'); 
     char line[INPUT_MAX_SIZE]; 
