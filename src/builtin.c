@@ -1,4 +1,5 @@
 #include "../include/builtin.h"
+#include "../include/utils.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -9,7 +10,7 @@
 /**
  * Array of builtin commands.
  */
-static char* builtinCommands[NB_BUILTIN_COMMANDS] = {"cd", "pwd"};
+static char* builtinCommands[NB_BUILTIN_COMMANDS] = {"cd", "pwd", "exit", "echo", "help"};
 
 int execute_builtin(command command){
 
@@ -21,6 +22,20 @@ int execute_builtin(command command){
     else if (strcmp(command.name, "pwd") == 0){
         pwd(); 
         return 0; 
+    }
+
+    else if(strcmp(command.name, "exit") == 0){
+        set_canonical_mode(STDIN_FILENO, 1); //reactivating the canonical mode for the terminal
+        exit(EXIT_SUCCESS); 
+        return 0; 
+    }
+
+    else if(strcmp(command.name, "echo") == 0){
+        printf("%s\n", command.args[0]); 
+    }
+
+    else if(strcmp(command.name, "help") == 0){
+        help();  
     }
 
     return -1;
@@ -60,6 +75,13 @@ void pwd(){
     }
 
     free(currentDirectory);
+}
+
+void help(){
+    printf("Builtin commands : \n"); 
+    for(int i = 0 ; i < NB_BUILTIN_COMMANDS ; i++){
+        printf("%s\n", builtinCommands[i]); 
+    } 
 }
 
 

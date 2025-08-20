@@ -3,7 +3,7 @@
 
 #include "../include/parser.h"
 
-#define NB_BUILTIN_COMMANDS 2
+#define NB_BUILTIN_COMMANDS 5
 #define REFRESH_PROMPT 401
 
 /**
@@ -20,7 +20,18 @@ int execute_builtin(command command);
  */
 int is_builtin(char* command); 
 
+/**
+ * shows the current working directory.
+ * It prints the current directory to the standard output.
+ * If the current directory cannot be determined, it prints an error message.
+ */
 void pwd(); 
+
+/**
+ * Shows the help message for builtin commands.
+ * It prints the list of available builtin commands to the standard output.
+ */
+void help(); 
 
 /**
  * Changes the current working directory to the specified path.

@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <termio.h>
 #include  <linux/limits.h>
 
 
@@ -49,4 +50,14 @@ char* get_prompt(){
     free(pwd);
 
     return prompt; 
+}
+
+void set_canonical_mode(int fd, int status){
+    struct termios oldt; 
+    tcgetattr(fd, &oldt); 
+    if(status == 0)
+        oldt.c_lflag &= ~(ICANON | ECHO); 
+    else if (status == 1)
+        oldt.c_lflag |= (ICANON | ECHO);
+    tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
 }

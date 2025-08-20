@@ -1,4 +1,5 @@
-#include "../include/parser.h" 
+#include "../include/parser.h"
+#include "../include/utils.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -71,11 +72,8 @@ char* read_input(){
     static int nonCanonMode = 0; // to check if the terminal is in non-canonical mode or not
     //if the terminal is in canonical mode, then we change it to non-canonical mode
     if(nonCanonMode == 0){ 
-        struct termios oldt; 
-        tcgetattr(STDIN_FILENO, &oldt); 
-        oldt.c_lflag &= ~(ICANON | ECHO); 
-        tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
-        nonCanonMode = 1; 
+        set_canonical_mode(STDIN_FILENO, 0); 
+        nonCanonMode++;
     }
 
     char* input = malloc(INPUT_MAX_SIZE * sizeof(char)); 

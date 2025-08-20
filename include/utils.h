@@ -12,4 +12,11 @@
  */
 char* get_prompt(); 
 
+/**
+ * @brief Sets the terminal to canonical mode or non-canonical mode.
+ * @param fd The file descriptor of the terminal.
+ * @param status If 1, sets the terminal to canonical mode; if 0, sets it to non-canonical mode.
+ */
+void set_canonical_mode(int fd, int status); 
+
 #endif
