@@ -3,7 +3,7 @@
 
 #include "../include/parser.h"
 
-#define NB_BUILTIN_COMMANDS 6
+#define NB_BUILTIN_COMMANDS 8
 #define REFRESH_PROMPT 401
 
 /**
@@ -33,17 +33,34 @@ void pwd();
  */
 void help(); 
 
+/**
+ * Shows the command history.
+ * It prints the list of commands stored in the history to the standard output.
+ */
 void history(); 
 
 /**
- * Changes the current working directory to the specified path.
- * @returns 0 if the operation was successful, -1 otherwise.
- * If the path is ".", it changes to the home directory.
+ * Exports environment variables.
+ * If no arguments are provided, it prints the list of environment variables.
+ * If arguments are provided, it sets the environment variables to the specified values.
+ * @param command The command containing the arguments to export.
+ * The arguments should be in the format "VAR=VALUE".
+ * If the format is incorrect, it prints an error message.
+ * If the variable already exists, it updates its value.
+ * @returns the number of environment variables that were successfully set.
+ */
+int export(command command);
+
+/**
+ * Changes the current working directory to the specified path in the command args.
+ * If the path is not provided, it changes to the home directory.
  * If the path is relative, it appends it to the current directory.
  * If the path is absolute, it changes to that directory.
  * If the path does not exist or is not a directory, it prints an error message.
  * If the operation is successful, it updates the PWD and OLDPWD environment variables.
+ * @param command The command containing the path to change to.
+ * @returns 0 if the operation was successful, -1 otherwise.
  */
-int cd(char* path); 
+int cd(command command); 
 
 #endif

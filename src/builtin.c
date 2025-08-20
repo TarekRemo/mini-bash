@@ -10,12 +10,14 @@
 /**
  * Array of builtin commands.
  */
-static char* builtinCommands[NB_BUILTIN_COMMANDS] = {"cd", "pwd", "exit", "echo", "help", "history"};
+static char* builtinCommands[NB_BUILTIN_COMMANDS] = {"cd", "pwd", "exit",
+                                                     "echo", "help", "history",
+                                                      "clear", "export"};
 
 int execute_builtin(command command){
 
     if(strcmp(command.name, "cd") == 0){
-        if (cd(command.args[0]) == 0)
+        if (cd(command) == 0)
             return REFRESH_PROMPT; // If cd is successful, tell the caller to refresh the prompt
     }
 
@@ -40,6 +42,14 @@ int execute_builtin(command command){
 
     else if(strcmp(command.name, "history") == 0){
         history();  
+    }
+
+    else if(strcmp(command.name, "clear") == 0){
+        printf("\033[H\033[J"); 
+    }
+
+    else if(strcmp(command.name, "export") == 0){
+        export(command);  
     }
 
     return -1;
@@ -94,10 +104,53 @@ void history(){
     }
 }
 
-int cd(char* path){
+int export(command command){
+
+    int counter = 0; //counter of the number of env var that has been successfully set
+
+    //if there is no args, then printing the list of env variables
+    if(command.argsNum == 0){ 
+        for(int i = 0 ; __environ[i] != NULL ; i++)
+            printf("%s\n", __environ[i]); 
+    }
+
+    else{
+        char* arg; 
+        char* varName; 
+        char* varValue;
+        int nameSize; 
+
+        for(int i = 0 ; i < command.argsNum ; i++){
+
+            arg = strdup(command.args[i]); 
+            varValue = strchr(arg, '='); 
+            if(varValue == NULL){
+                printf("impossible d'exporter '%s'. le format doit être la suivante : nomVar=ValeurVar\n", arg);
+                continue; 
+            }
+
+            nameSize = strlen(arg)-strlen(varValue); 
+            varName = malloc(nameSize); 
+ 
+            varName = strncpy(varName, arg, nameSize);
+            varName[nameSize] = '\0'; //ending the name's string
+            varValue = varValue+1; //removing the '=' from the value
+
+            setenv(varName, varValue, 1); 
+            free(varName); 
+            counter++; 
+        }
+    }
+
+    return counter; 
+}
+
+int cd(command command){
+
+    char* path = command.args[0];
 
     //if the user wants to go to the home directory
-    if(strcmp(path, "") == 0 || path == NULL || !path ){
+    if(command.argsNum == 0){
         path = getenv("HOME"); 
     }
 
