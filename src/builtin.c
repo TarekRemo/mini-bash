@@ -5,12 +5,12 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <errno.h>
-#include<linux/limits.h>
+#include <linux/limits.h>
 
 /**
  * Array of builtin commands.
  */
-static char* builtinCommands[NB_BUILTIN_COMMANDS] = {"cd", "pwd", "exit", "echo", "help"};
+static char* builtinCommands[NB_BUILTIN_COMMANDS] = {"cd", "pwd", "exit", "echo", "help", "history"};
 
 int execute_builtin(command command){
 
@@ -36,6 +36,10 @@ int execute_builtin(command command){
 
     else if(strcmp(command.name, "help") == 0){
         help();  
+    }
+
+    else if(strcmp(command.name, "history") == 0){
+        history();  
     }
 
     return -1;
@@ -84,6 +88,11 @@ void help(){
     } 
 }
 
+void history(){
+    for(int i = 0 ; i < nbHistoryCommands ; i++){
+        printf("%s\n", historyCommands[i]); 
+    }
+}
 
 int cd(char* path){
 

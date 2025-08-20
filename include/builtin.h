@@ -3,7 +3,7 @@
 
 #include "../include/parser.h"
 
-#define NB_BUILTIN_COMMANDS 5
+#define NB_BUILTIN_COMMANDS 6
 #define REFRESH_PROMPT 401
 
 /**
@@ -32,6 +32,8 @@ void pwd();
  * It prints the list of available builtin commands to the standard output.
  */
 void help(); 
+
+void history(); 
 
 /**
  * Changes the current working directory to the specified path.
