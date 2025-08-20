@@ -12,7 +12,7 @@
  */
 static char* builtinCommands[NB_BUILTIN_COMMANDS] = {"cd", "pwd", "exit",
                                                      "echo", "help", "history",
-                                                      "clear", "export"};
+                                                      "clear", "export", "unset"};
 
 int execute_builtin(command command){
 
@@ -50,6 +50,10 @@ int execute_builtin(command command){
 
     else if(strcmp(command.name, "export") == 0){
         export(command);  
+    }
+
+    else if(strcmp(command.name, "unset") == 0){
+        unset(command);  
     }
 
     return -1;
@@ -103,6 +107,18 @@ void history(){
         printf("%s\n", historyCommands[i]); 
     }
 }
+
+int unset(command command){
+    int counter = 0; //counter of the number of env var that has been successfully unset
+    for(int i = 0 ; i < command.argsNum ; i++){
+        if(unsetenv(command.args[i]) == -1)
+            perror("Une erreur s'est produite"); 
+        else
+            counter++;
+    }
+    return counter; 
+} 
+
 
 int export(command command){
 

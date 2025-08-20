@@ -3,7 +3,7 @@
 
 #include "../include/parser.h"
 
-#define NB_BUILTIN_COMMANDS 8
+#define NB_BUILTIN_COMMANDS 9
 #define REFRESH_PROMPT 401
 
 /**
@@ -38,6 +38,15 @@ void help();
  * It prints the list of commands stored in the history to the standard output.
  */
 void history(); 
+
+/**
+ * unsets environment variables.
+ * Does nothing if no arguments are present int the command parameter.
+ * @param command The command containing the arguments to unset.
+ * The arguments should not contain the '=' character.
+ * @return the number of environment variables that were successfully unset.
+ */
+int unset(command command); 
 
 /**
  * Exports environment variables.
