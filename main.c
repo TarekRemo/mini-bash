@@ -1,6 +1,7 @@
 #include "./include/utils.h"
 #include "./include/parser.h"
 #include "./include/builtin.h"
+#include "./include/executor.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -28,7 +29,10 @@ int main(void){
                 free(prompt); 
                 prompt = get_prompt(); 
             }
-        }      
+        } 
+        else{
+            execute(command); 
+        }     
     }
 }
 
