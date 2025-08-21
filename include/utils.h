@@ -19,4 +19,14 @@ char* get_prompt();
  */
 void set_canonical_mode(int fd, int status); 
 
+/**
+ * Reads input from the user in non-canonical mode.
+ * The function reads characters one by one, allowing for immediate processing of input.
+ * special keys handeled are the up and down arrows to navigate through command history 
+ * and the enter key to submit the command.
+ * @return the input string entered by the user once the enter key is pressed.
+ * The input is allocated dynamically and should be freed by the caller using `free()`.
+ */
+char* read_input(); 
+
 #endif
