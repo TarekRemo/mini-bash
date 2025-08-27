@@ -23,29 +23,58 @@ command parse_command(char* input){
     command.optionsNum = 0; 
     command.argsNum = 0; 
 
-    char* strToken = strtok(input, " \t\n"); //spliting the input using the spaces and tab characters
+    char* ptr = input;
+    while (*ptr) {
+        // Skip leading spaces/tabs
+        while (*ptr == ' ' || *ptr == '\t' || *ptr == '\n') 
+            ptr++;
 
-    while( strToken != NULL ){
-        if(tokenIndex == 0){
-            command.name = strToken; //If it's the first token, then it's the command's name
-        }
-        else{
-            //if the token is an option
-            if(strToken[0] == '-'){
-                command.options[optionsIndex] = strToken;
-                optionsIndex++; 
-                command.optionsNum++; 
-            }//if the token is an option
-            
-            else{
-                command.args[argsIndex] = strToken; 
-                argsIndex++; 
-                command.argsNum ++; 
+        if (*ptr == '\0') 
+            break;
+
+        char token[INPUT_MAX_SIZE];
+        int tokenLen = 0;
+
+        //If the argument is between quotes
+        if (*ptr == '"') {
+
+            ptr++; // skip opening quote
+            while (*ptr && *ptr != '"') {
+                token[tokenLen] = *ptr;
+                tokenLen++;
+                ptr++;
             }
-        }
+            token[tokenLen] = '\0';
 
-        tokenIndex++; 
-        strToken = strtok(NULL, " \t\n"); 
+            if (*ptr == '"') 
+                ptr++; // skip closing quote
+
+        } //If the argument is between quotes
+
+        // normal argument
+        else {
+            while (*ptr && *ptr != ' ' && *ptr != '\t' && *ptr != '\n') {
+                token[tokenLen] = *ptr;
+                tokenLen++;
+                ptr++;
+            }
+            token[tokenLen] = '\0';
+        }// normal argument
+
+        if (tokenLen > 0) {
+            if (tokenIndex == 0) {
+                command.name = strdup(token);
+            } else if (token[0] == '-') {
+                command.options[optionsIndex] = strdup(token);
+                optionsIndex++;
+                command.optionsNum++;
+            } else {
+                command.args[argsIndex] = strdup(token);
+                argsIndex++;
+                command.argsNum++;
+            }
+            tokenIndex++;
+        }
     }
 
     return command; 
