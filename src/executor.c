@@ -26,7 +26,7 @@ int execute(command command){
     }
 
     //array containing every arg and opt necessary for the 'execvp' function
-    char* argsAndOpts[command.argsNum+command.optionsNum+2]; 
+    char* argsAndOpts[command.argsNum+2]; 
     argsAndOpts[0] = strdup(executableName);
 
     //filling the array with the arguments
@@ -34,13 +34,8 @@ int execute(command command){
         argsAndOpts[i+1] = strdup(command.args[i]); 
     }
 
-    //filling the array with the options
-    for(int i = 0 ; i < command.optionsNum ; i++){
-        argsAndOpts[command.argsNum+1+i] = strdup(command.options[i]); 
-    }
-
     //necessary for the 'execvp' function
-    argsAndOpts[command.argsNum+command.optionsNum+1] = NULL;  
+    argsAndOpts[command.argsNum+1] = NULL;  
 
     pid_t pid = fork(); 
 
@@ -79,6 +74,7 @@ int execute(command command){
                         perror("Une erreur s'est produite"); 
                         break;  
                 }
+                set_canonical_mode(STDIN_FILENO, 0); //disabling canonical mode
                 return EXIT_FAILURE; 
             }
             break;

@@ -12,15 +12,11 @@ int nbHistoryCommands;
 command parse_command(char* input){
     int tokenIndex = 0; 
     int argsIndex = 0; 
-    int optionsIndex = 0; 
 
     command command;
 
     //making sure the first arg and first opt are empty strings if none is present
     command.args[0] = ""; 
-    command.options[0] = ""; 
-
-    command.optionsNum = 0; 
     command.argsNum = 0; 
 
     char* ptr = input;
@@ -64,11 +60,8 @@ command parse_command(char* input){
         if (tokenLen > 0) {
             if (tokenIndex == 0) {
                 command.name = strdup(token);
-            } else if (token[0] == '-') {
-                command.options[optionsIndex] = strdup(token);
-                optionsIndex++;
-                command.optionsNum++;
-            } else {
+            }
+            else {
                 command.args[argsIndex] = strdup(token);
                 argsIndex++;
                 command.argsNum++;

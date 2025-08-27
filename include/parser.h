@@ -3,8 +3,7 @@
 
 #include <stdio.h>
 
-#define MAX_OPTIONS 15
-#define MAX_ARGS 15
+#define MAX_ARGS 30
 #define INPUT_MAX_SIZE 256
 
 /**
@@ -40,9 +39,7 @@ extern int nbHistoryCommands;
 */
 typedef struct command{
     char* name; 
-    char* options[MAX_OPTIONS]; 
     char* args[MAX_ARGS]; 
-    int optionsNum; 
     int argsNum; 
 } command; 
 
