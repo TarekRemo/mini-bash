@@ -4,6 +4,7 @@
 #include "./include/executor.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
 
 int main(void){
 
@@ -22,6 +23,10 @@ int main(void){
         input = read_input();
 
         command = parse_command(input); 
+        if(errno == UNEXPECTED_CHARACTER){
+            printf("Un caractère inattendu est présent\n"); 
+            continue; 
+        } 
 
         if(is_builtin(command.name) == 1){
             result = execute_builtin(command); 

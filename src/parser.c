@@ -5,6 +5,7 @@
 #include <string.h>
 #include <termios.h>
 #include <unistd.h>
+#include <errno.h>
 
 char** historyCommands = NULL;
 int nbHistoryCommands;
@@ -18,6 +19,10 @@ command parse_command(char* input){
     //making sure the first arg and first opt are empty strings if none is present
     command.args[0] = ""; 
     command.argsNum = 0; 
+    command.outputRedirFile = NULL;
+    command.inputRedirFile = NULL;
+
+    int tokenType; //to know if the token is the input or output file for the redirection
 
     char* ptr = input;
     while (*ptr) {
@@ -50,9 +55,47 @@ command parse_command(char* input){
         // normal argument
         else {
             while (*ptr && *ptr != ' ' && *ptr != '\t' && *ptr != '\n') {
-                token[tokenLen] = *ptr;
-                tokenLen++;
-                ptr++;
+
+                //if the user wants to redirect the output of the command
+                if(*ptr == '>'){
+
+                    //If we are expecting an input file, an error happens
+                    if(tokenType == IS_INPUT_FILE){
+                        errno = UNEXPECTED_CHARACTER; 
+                        return command; 
+                    }//If we are expecting an input file, an error happens
+
+                    //if 2 consecutive ">" are used, append to the file 
+                    else if(tokenType == IS_OUTPUT_FILE){
+                        command.appendRedirect = 1; 
+                    }
+                    else{
+                        tokenType = NEXT_IS_OUTPUT_FILE; 
+                    }
+
+                    ptr++; 
+                    break;
+                }//if the user wants to redirect the output of the command
+
+                //if the user wants to redirect the input of the command
+                else if(*ptr == '<'){
+
+                    //If we are expecting an output file, an error happens
+                    if(tokenType == IS_OUTPUT_FILE){
+                        errno = UNEXPECTED_CHARACTER; 
+                        return command; 
+                    }//If we are expecting an output file, an error happens
+
+                    tokenType = NEXT_IS_INPUT_FILE; 
+                    ptr++; 
+                    break;
+                }//if the user wants to redirect the input of the command
+
+                else{
+                    token[tokenLen] = *ptr;
+                    tokenLen++;
+                    ptr++;
+                }
             }
             token[tokenLen] = '\0';
         }// normal argument
@@ -62,12 +105,27 @@ command parse_command(char* input){
                 command.name = strdup(token);
             }
             else {
-                command.args[argsIndex] = strdup(token);
-                argsIndex++;
-                command.argsNum++;
+                if(tokenType == IS_OUTPUT_FILE){
+                    command.outputRedirFile = strdup(token); 
+                    tokenType = 0; //resteting the token type
+                }
+                else if(tokenType == IS_INPUT_FILE){
+                    command.inputRedirFile = strdup(token); 
+                    tokenType = 0; //resteting the token type
+                }
+                else{
+                    command.args[argsIndex] = strdup(token);
+                    argsIndex++;
+                    command.argsNum++;
+                }
             }
             tokenIndex++;
         }
+
+        if(tokenType == NEXT_IS_OUTPUT_FILE)
+            tokenType = IS_OUTPUT_FILE; //expecting an output file now
+        else if (tokenType == NEXT_IS_INPUT_FILE)
+            tokenType = IS_INPUT_FILE; //expecting an input file now
     }
 
     return command; 
