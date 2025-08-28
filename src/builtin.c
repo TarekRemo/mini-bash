@@ -14,52 +14,6 @@ static char* builtinCommands[NB_BUILTIN_COMMANDS] = {"cd", "pwd", "exit",
                                                      "echo", "help", "history",
                                                       "clear", "export", "unset"};
 
-int execute_builtin(command command){
-
-    if(strcmp(command.name, "cd") == 0){
-        if (cd(command) == 0)
-            return REFRESH_PROMPT; // If cd is successful, tell the caller to refresh the prompt
-    }
-
-    else if (strcmp(command.name, "pwd") == 0){
-        pwd(); 
-        return 0; 
-    }
-
-    else if(strcmp(command.name, "exit") == 0){
-        set_canonical_mode(STDIN_FILENO, 1); //reactivating the canonical mode for the terminal
-        exit(EXIT_SUCCESS); 
-        return 0; 
-    }
-
-    else if(strcmp(command.name, "echo") == 0){
-        printf("%s\n", command.args[0]); 
-    }
-
-    else if(strcmp(command.name, "help") == 0){
-        help();  
-    }
-
-    else if(strcmp(command.name, "history") == 0){
-        history();  
-    }
-
-    else if(strcmp(command.name, "clear") == 0){
-        printf("\033[H\033[J"); 
-    }
-
-    else if(strcmp(command.name, "export") == 0){
-        export(command);  
-    }
-
-    else if(strcmp(command.name, "unset") == 0){
-        unset(command);  
-    }
-
-    return -1;
-}
-
-
 int is_builtin(char* commandName){
     for(int i = 0 ; i < NB_BUILTIN_COMMANDS ; i++){
         if(strcmp(commandName, builtinCommands[i]) == 0)
@@ -68,7 +22,7 @@ int is_builtin(char* commandName){
     return 0;
 }
 
-void pwd(){
+int pwd(){
     char* currentDirectory = malloc(PATH_MAX); 
     currentDirectory = getcwd(currentDirectory, PATH_MAX); 
 
@@ -87,12 +41,13 @@ void pwd(){
                 perror("Une erreur est survenue"); 
                 break;  
         }
+        return -1; 
     }
     else{
         printf("%s\n", currentDirectory); 
     }
-
     free(currentDirectory);
+    return 0; 
 }
 
 void help(){

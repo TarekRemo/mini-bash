@@ -28,16 +28,26 @@ int main(void){
             continue; 
         } 
 
-        if(is_builtin(command.name) == 1){
-            result = execute_builtin(command); 
-            if(result  == REFRESH_PROMPT ){
+        result = execute(command); 
+        switch(result){
+            case REFRESH_PROMPT:
                 free(prompt); 
                 prompt = get_prompt(); 
-            }
-        } 
-        else{
-            execute(command); 
-        }     
+                break; 
+            case -1 : 
+                printf("Impossible d'exécuter la commande. Une erreur est survenue\n"); 
+                break;
+            case -2 : 
+                printf("impossible de créer un processus fils pour exécuter la commande\n"); 
+                break;
+            case -3: 
+                printf("Le processus fils a été terminé par le signal : %d\n", sigNum);
+                break; 
+            case -4: 
+                printf("Le processus fils a été arrêté par le signal : %d\n", sigNum);  
+                break; 
+        }
+                    
     }
 }
 
