@@ -3,6 +3,7 @@
 
 #include "../include/parser.h"
 #define REFRESH_PROMPT 401
+#define EXIT_COMMAND 402
 
 extern int sigNum; 
 
@@ -17,7 +18,8 @@ extern int sigNum;
  * @return Returns the exit status of the command if it was executed successfully,
  *  '-1' if the execution fails with an error, '-2' if the fork fails, 
  * '-3' if the child process is terminated by a signal,
- *  or '-4' if the child process was stopped.
+ *  '-4' if the child process was stopped 
+ *  or '-5' if the redirection of the standard input/output failed
  */
 int execute(command command); 
 
@@ -25,8 +27,8 @@ int execute(command command);
 /**
  * Executes a builtin command.
  * @param command The command structure containing the command.
- * @returns 0 if the command was executed successfully, REFRESH_PROMPT if the prompt should be refreshed or
- * -1 if it failed.
+ * @returns 0 if the command was executed successfully, REFRESH_PROMPT if the prompt should be refreshed, 
+ * EXIT_SUCCESS if the command is 'exit', -1 if it failed.
  */
 int execute_builtin(command command); 
 
@@ -38,5 +40,7 @@ int execute_builtin(command command);
  * @return Returns -1 if the execution fails with an error.
  */
 int execute_external(command command); 
+
+int redirect_IO(command command); 
 
 #endif

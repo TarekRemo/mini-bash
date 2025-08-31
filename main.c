@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <unistd.h>
 
 int main(void){
 
@@ -17,7 +18,6 @@ int main(void){
 
     while(1){
         printf("%s ", prompt);
-
         if(input)
             free(input);
         input = read_input();
@@ -30,6 +30,12 @@ int main(void){
 
         result = execute(command); 
         switch(result){
+            case EXIT_COMMAND : 
+                free(prompt); 
+                free(input); 
+                set_canonical_mode(STDIN_FILENO, 1); //reactivating the canonical mode for the terminal
+                exit(EXIT_SUCCESS); 
+                break;
             case REFRESH_PROMPT:
                 free(prompt); 
                 prompt = get_prompt(); 

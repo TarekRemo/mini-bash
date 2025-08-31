@@ -9,6 +9,8 @@
 #include <errno.h>
 #include <sys/wait.h>
 #include <sys/types.h>
+#include <fcntl.h>
+
 
 int sigNum = -1; 
 
@@ -23,14 +25,25 @@ int execute(command command){
             break;
 
         case 0 : //child process
-            if(is_builtin(command.name) == 1)
-                result = execute_builtin(command); 
-            else
-                result = execute_external(command); 
+            set_canonical_mode(STDIN_FILENO, 1); //enabling canonical mode
 
-            if(result == -1)
-                result = EXIT_FAILURE; 
+            //If the redirection didn't fail
+            if( (redirect_IO(command)) == 0){
+                if(is_builtin(command.name) == 1)
+                    result = execute_builtin(command); 
+                else
+                    result = execute_external(command); 
 
+                if(result == -1)
+                    result = EXIT_FAILURE; 
+            }//If the redirection didn't fail
+
+            else{
+                result = -5; 
+            }
+
+            set_canonical_mode(STDIN_FILENO, 0); //enabling canonical mode
+            exit(result);
             break;
 
         default : //parent process
@@ -77,8 +90,7 @@ int execute_builtin(command command){
     }
 
     else if(strcmp(command.name, "exit") == 0){
-        set_canonical_mode(STDIN_FILENO, 1); //reactivating the canonical mode for the terminal
-        exit(EXIT_SUCCESS); 
+        return(EXIT_COMMAND); 
     }
 
     else if(strcmp(command.name, "echo") == 0){
@@ -139,7 +151,6 @@ int execute_external(command command){
     //necessary for the 'execvp' function
     argsAndOpts[command.argsNum+1] = NULL;
 
-    set_canonical_mode(STDIN_FILENO, 1); //enabling canonical mode
     result = execvp(command.name, argsAndOpts); //executing the command
     if(result == -1){
         switch(errno){
@@ -168,6 +179,53 @@ int execute_external(command command){
                 break;  
         }
     }
-    set_canonical_mode(STDIN_FILENO, 0); //disabling canonical mode
     return result;
+}
+
+
+int redirect_IO(command command){
+
+    if(command.outputRedirFile != NULL){
+
+        //verifying if the file exists
+        FILE* file = fopen(command.outputRedirFile, "r"); 
+        //if it doesn't exist
+        if(file == NULL && errno == ENOENT){
+            //creating it
+            file = fopen(command.outputRedirFile, "w"); 
+            if(file == NULL){
+                perror("Une erreur est surevenue lors de la redirection de la sortie standard"); 
+                return -1;  
+            }
+        }
+        if(file != NULL)
+            fclose(file);
+
+        int flag = O_WRONLY|O_CREAT; 
+        if(command.appendRedirect == 1)
+            flag |= O_APPEND; 
+        else
+            flag |= O_TRUNC;
+
+        int outputFD = open(command.outputRedirFile, flag); 
+        if(outputFD != -1)
+            dup2(outputFD, STDOUT_FILENO);
+        else{
+            perror("Une erreur est surevenue lors de la redirection de la sortie standard"); 
+            return -1;  
+        }
+    }
+
+    if(command.inputRedirFile){
+        int flag = O_RDONLY; 
+        int inputFD = open(command.inputRedirFile, flag); 
+        if(inputFD != -1)
+            dup2(inputFD, STDIN_FILENO);
+        else{
+            perror("Une erreur est surevenue lors de la redirection de l'entrée standard"); 
+            return -1;  
+        }
+    }
+
+    return 0; 
 }
