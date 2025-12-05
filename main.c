@@ -26,7 +26,9 @@ int main(void){
         if(errno == UNEXPECTED_CHARACTER){
             printf("Un caractère inattendu est présent\n"); 
             continue; 
-        } 
+        }
+
+        //chanign things to test API github
 
         result = execute(command); 
         switch(result){
