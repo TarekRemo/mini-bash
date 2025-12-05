@@ -28,6 +28,8 @@ int main(void){
             continue; 
         } 
 
+        //another change to test github api
+
         result = execute(command); 
         switch(result){
             case EXIT_COMMAND : 
